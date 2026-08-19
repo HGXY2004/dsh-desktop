@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self' data:;" />
+  <title>DSH Desktop</title>
+  <link rel="stylesheet" href="splash.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">DSH</div>
+      <div>
+        <div class="title">DSH Desktop</div>
+        <div class="subtitle">DeepSeek Harness · WSL2 运行时 / runtime</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span id="phase-pill" class="pill">初始化</span>
+      <a id="url-link" class="url hidden" href="#">—</a>
+    </div>
+  </header>
+
+  <nav id="tabs">
+    <button data-tab="status" class="tab active">状态</button>
+    <button data-tab="settings" class="tab">设置</button>
+    <button data-tab="plugins" class="tab">插件</button>
+    <button data-tab="config" class="tab">配置</button>
+    <button data-tab="about" class="tab">关于</button>
+  </nav>
+
+  <main>
+    <!-- 状态 -->
+    <section id="tab-status" class="panel active">
+      <div class="status-hero">
+        <div id="spinner" class="spinner"></div>
+        <div>
+          <div id="status-text" class="status-text">正在初始化…</div>
+          <div id="status-detail" class="status-detail"></div>
+        </div>
+      </div>
+      <div id="runtime-cards" class="cards hidden">
+        <div class="card"><div class="card-k">发行版 / distro</div><div class="card-v" id="v-distro">—</div></div>
+        <div class="card"><div class="card-k">dsh</div><div class="card-v" id="v-dsh">—</div></div>
+        <div class="card"><div class="card-k">Node.js</div><div class="card-v" id="v-node">—</div></div>
+        <div class="card"><div class="card-k">pnpm</div><div class="card-v" id="v-pnpm">—</div></div>
+      </div>
+      <div id="need-wsl-box" class="notice hidden"></div>
+      <div class="actions">
+        <button id="btn-retry" class="btn">重试 / Retry</button>
+        <button id="btn-restart" class="btn">重启服务器 / Restart</button>
+        <button id="btn-open-main" class="btn primary">打开主窗口 / Main window</button>
+        <button id="btn-open-browser" class="btn">在浏览器打开</button>
+        <button id="btn-shell" class="btn">WSL 终端</button>
+        <button id="btn-explorer-ws" class="btn">工作目录</button>
+        <button id="btn-explorer-dsh" class="btn">DSH_HOME</button>
+      </div>
+    </section>
+
+    <!-- 设置 -->
+    <section id="tab-settings" class="panel">
+      <div class="form-grid">
+        <label>WSL 发行版 / distro
+          <select id="s-distro"></select>
+        </label>
+        <label>工作目录（Windows 路径，映射到 /mnt/…） / workspace
+          <div class="row">
+            <input id="s-workspace" type="text" spellcheck="false" />
+            <button id="s-workspace-browse" class="btn small">浏览…</button>
+          </div>
+        </label>
+        <label>DSH_HOME（留空 = ~/.dsh）
+          <input id="s-dshhome" type="text" spellcheck="false" placeholder="~/.dsh" />
+        </label>
+        <label>Node 版本 / Node.js version
+          <input id="s-nodever" type="text" spellcheck="false" />
+        </label>
+        <label>Node 下载镜像（逗号分隔，依次回退）
+          <input id="s-nodemirrors" type="text" spellcheck="false" />
+        </label>
+        <label>npm registry（逗号分隔，依次回退）
+          <input id="s-registries" type="text" spellcheck="false" />
+        </label>
+        <label>dsh 版本（latest 或精确版本）
+          <input id="s-dshver" type="text" spellcheck="false" />
+        </label>
+        <label>固定端口（0 = 自动选择）
+          <input id="s-port" type="number" min="0" max="65535" />
+        </label>
+        <label>dsh web 额外参数（如 --patch extra.yml）
+          <input id="s-extraargs" type="text" spellcheck="false" placeholder="--patch /mnt/c/.../extra.yml" />
+        </label>
+        <label>额外环境变量（每行 KEY=VALUE，注入 dsh 进程）
+          <textarea id="s-env" rows="4" spellcheck="false"></textarea>
+        </label>
+        <label class="check">
+          <input id="s-autorestart" type="checkbox" /> 服务器异常退出时自动重启（最多 3 次）
+        </label>
+      </div>
+      <div class="actions">
+        <button id="btn-save" class="btn">保存</button>
+        <button id="btn-save-restart" class="btn primary">保存并重启服务器</button>
+        <button id="btn-rebootstrap" class="btn">重新安装运行时（强制）</button>
+      </div>
+      <p class="hint">镜像 / 版本 / DSH_HOME 变更在下一次「重启服务器」或「重新安装运行时」后生效。</p>
+    </section>
+
+    <!-- 插件 -->
+    <section id="tab-plugins" class="panel">
+      <p class="hint">通过 <code>dsh plugin --profile web &lt;pnpm args&gt;</code> 管理 Web profile 的插件层，安装声明 <code>dsh.bundle</code> 的包会自动加入配置层叠。</p>
+      <div class="actions">
+        <button id="btn-plug-list" class="btn">列出插件 (ls)</button>
+        <button id="btn-plug-outdated" class="btn">检查更新 (outdated)</button>
+        <button id="btn-plug-update" class="btn">更新全部 (update)</button>
+      </div>
+      <div class="row">
+        <input id="plug-args" type="text" spellcheck="false" placeholder="add &lt;package&gt;  /  remove &lt;package&gt;  /  why &lt;package&gt;" />
+        <button id="btn-plug-run" class="btn primary">运行</button>
+      </div>
+      <div class="actions">
+        <button id="btn-dumpcfg" class="btn">查看合成配置 (--dump-config)</button>
+      </div>
+    </section>
+
+    <!-- 配置 -->
+    <section id="tab-config" class="panel">
+      <div class="row">
+        <select id="cfg-kind">
+          <option value="home">~/.dsh/cordis.patch.yml（home 层）</option>
+          <option value="web-profile">profiles/web/cordis.patch.yml（profile 层）</option>
+          <option value="web-manifest">profiles/web/package.json（profile 清单）</option>
+        </select>
+        <button id="btn-cfg-read" class="btn">读取</button>
+        <button id="btn-cfg-save" class="btn primary">保存</button>
+      </div>
+      <div id="cfg-path" class="hint"></div>
+      <textarea id="cfg-content" rows="16" spellcheck="false" placeholder="# YAML"></textarea>
+      <p class="hint">保存后重启服务器生效。层叠顺序：dsh.profile.bundles → profile patch → home patch → --patch。</p>
+    </section>
+
+    <!-- 关于 -->
+    <section id="tab-about" class="panel">
+      <div id="about-body">加载中…</div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="log-head">
+      <span>运行日志 / logs</span>
+      <button id="btn-clear-log" class="btn small">清空</button>
+    </div>
+    <pre id="log"></pre>
+  </footer>
+
+  <script src="splash.js"></script>
+</body>
+</html>

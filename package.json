@@ -1,0 +1,19 @@
+{
+  "name": "dsh-desktop",
+  "productName": "DSH Desktop",
+  "version": "1.0.0",
+  "description": "DeepSeek Harness desktop app for Windows 10/11 - powered by WSL2, zero-config bootstrap, full dsh configurability.",
+  "author": "DSH Desktop contributors",
+  "license": "MIT",
+  "main": "src/main/index.js",
+  "scripts": {
+    "start": "electron .",
+    "smoke": "electron . --smoke",
+    "dist": "electron-builder --win nsis portable",
+    "dist:dir": "electron-builder --win --dir"
+  },
+  "devDependencies": {
+    "electron": "^37.0.0",
+    "electron-builder": "^26.0.0"
+  }
+}

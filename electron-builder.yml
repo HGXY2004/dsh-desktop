@@ -1,0 +1,32 @@
+appId: ai.deepseek.dshdesktop
+productName: DSH Desktop
+copyright: MIT License
+directories:
+  output: release
+  buildResources: build
+files:
+  - src/**/*
+  - package.json
+  - "!**/*.map"
+extraResources:
+  - from: resources/wsl
+    to: wsl
+    filter: ["**/*"]
+  - from: resources/icon.png
+    to: icon.png
+asar: true
+icon: resources/icon.png
+win:
+  target:
+    - nsis
+    - portable
+  artifactName: ${productName}-${version}-setup.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: DSH Desktop
+  deleteAppDataOnUninstall: false
+portable:
+  artifactName: ${productName}-${version}-portable.${ext}
