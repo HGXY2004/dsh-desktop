@@ -2,6 +2,9 @@
 
 English | [中文](README.zh.md)
 
+> ⚠️ **Disclaimer**: **pure LLM Coding by a script kiddie** — built entirely through AI conversations, with no human code review.
+> Please review the source code yourself before using it in production. Issues welcome: https://github.com/HGXY2004/dsh-desktop
+
 A Windows 10/11 desktop app built around **DeepSeek Harness (dsh)**. The harness and its entire runtime live inside **WSL2**; the desktop shell only bootstraps, supervises, and windows it - zero-config on first launch, with all dsh configuration surfaces and plugin extensibility preserved.
 
 ## Architecture

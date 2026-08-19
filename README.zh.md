@@ -2,6 +2,9 @@
 
 [English](README.md) | 中文
 
+> ⚠️ **特别声明**：**脚本小子纯 LLM Coding 的产物** —— 由 AI 对话驱动完成，无人工代码审查。
+> 请自行审阅源码后再用于生产环境，发现任何问题欢迎提 issue：https://github.com/HGXY2004/dsh-desktop
+
 以 **DeepSeek Harness（dsh）** 为核心的 Windows 10/11 桌面应用。dsh 及其全部运行时都运行在 **WSL2** 内，桌面端只负责引导、生命周期管理与窗口承载——开箱即用，且完整保留 dsh 的配置体系与插件扩展性。
 
 ## 架构
