@@ -30,7 +30,12 @@ authenticated URL; the main window authenticates on first load.
 按 origin 比较窗口 URL（令牌换 cookie 后地址会变干净）；
 服务器每次重启（端口/令牌轮换）强制重载，避免旧令牌残留。
 
-## 安装（原地补丁，无需重装整个应用）/ Install (in-place patch)
+## 安装方式 A：完整安装器（推荐）/ Full installer (recommended)
+
+下载本 Release 附件中的 `DSH Desktop-1.0.1-setup.exe`（NSIS 安装器）覆盖安装，或使用 `DSH Desktop-1.0.1-portable.exe`（便携版）。
+1.0.0 用户直接运行安装器即可升级；配置与 WSL2 内运行时不受影响。
+
+## 安装方式 B：asar 原地补丁（无需重装整个应用）/ In-place patch
 
 前提：已安装 DSH Desktop 1.0.0（`C:\Program Files\DSH Desktop`），WSL2 内 dsh ≥ 0.1.5。
 
@@ -51,4 +56,4 @@ authenticated URL; the main window authenticates on first load.
 | `install-patch.bat` | 双击入口 |
 | `PATCH-NOTES.md` | 本说明 |
 
-完整 NSIS 安装包本版本未重新构建；asar 原地补丁对 1.0.0 安装完全等效。
+完整 NSIS 安装器与便携版已随本 Release 提供（方式 A）；asar 原地补丁（方式 B）对 1.0.0 安装完全等效，两种方式二选一。
