@@ -1,7 +1,7 @@
 {
   "name": "dsh-desktop",
   "productName": "DSH Desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "DeepSeek Harness desktop app for Windows 10/11 - powered by WSL2, zero-config bootstrap, full dsh configurability.",
   "author": "DSH Desktop contributors",
   "license": "MIT",

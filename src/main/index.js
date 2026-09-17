@@ -75,10 +75,18 @@ function createSplash() {
   getWindows();
 }
 
-function showMainWindow() {
+function sameOrigin(a, b) {
+  try { return new URL(a).origin === new URL(b).origin; } catch { return false; }
+}
+
+function showMainWindow(opts = {}) {
   if (!server.url) return;
   if (mainWindow) {
-    if (mainWindow.webContents.getURL() !== server.url) mainWindow.loadURL(server.url);
+    /* After the first authenticated load dsh 303-redirects to a clean `/`
+     * (launch token consumed into a signed cookie), so compare by origin and
+     * only force a reload when the server generation changed (new token). */
+    const current = mainWindow.webContents.getURL();
+    if (opts.force || !current || !sameOrigin(current, server.url)) mainWindow.loadURL(server.url);
     mainWindow.show();
     mainWindow.focus();
     return;
@@ -162,7 +170,7 @@ server.on('state', (s) => {
   if (s.state === 'ready') {
     restartAttempts = 0;
     setPhase('ready', server.url);
-    showMainWindow();
+    showMainWindow({ force: true });
   } else if (s.state === 'failed') {
     setPhase('server-failed', s.reason || 'dsh web exited');
     const settings = settingsStore.load();

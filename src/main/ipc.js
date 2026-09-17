@@ -138,7 +138,10 @@ function registerIpc(deps) {
   ipcMain.handle('bootstrap:run', () => pipeline({ forceBootstrap: true }));
   ipcMain.handle('server:restart', () => restartServer());
   ipcMain.handle('server:stop', () => server.stop());
-  ipcMain.handle('plugin:run', (_e, argsLine) => runDshOp('--profile web ' + (argsLine || '')));
+  /* dsh >= 0.1.5 manages profile plugins via `dsh plugin --profile web <pnpm args>`.
+   * (The old `dsh --profile web <args>` form now BOOTS the web app with junk
+   * arguments and collides with the running instance's exclusive locks.) */
+  ipcMain.handle('plugin:run', (_e, argsLine) => runDshOp('plugin --profile web ' + (argsLine || '')));
   ipcMain.handle('dsh:run', (_e, argsLine) => runDshOp(argsLine));
   ipcMain.handle('config:read', (_e, kind) => readConfig(kind));
   ipcMain.handle('config:write', (_e, kind, content) => writeConfig(kind, content));

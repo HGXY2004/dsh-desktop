@@ -12,7 +12,13 @@ const { wslExec, wslStream } = require('./wsl');
 const { sq, shlex, envPrefix, winToWslPath } = require('./util');
 const { launchScriptWslPath } = require('./bootstrap');
 
-const URL_RE = /dsh web: http:\/\/127\.0\.0\.1:(\d+)/;
+/*
+ * dsh >= 0.1.5 prints `dsh web: http://127.0.0.1:<port>/?token=<launch-token>`
+ * (optionally followed by " (LAN: ...)"); older builds print the bare URL.
+ * Capture the WHOLE URL: the token query is the only authentication input for
+ * the first load, and a token-less request now receives a hard 401.
+ */
+const URL_RE = /dsh web: (http:\/\/[^\s]+)/;
 const PID_RE = /DSHDESKTOP_PID=(\d+)/;
 
 function probe(url, timeoutMs = 3000) {
@@ -77,9 +83,13 @@ class DshServer extends EventEmitter {
     Object.assign(env, settings.extraEnv || {});
     const envStr = envPrefix(env);
 
+    /* --no-open: the desktop window is the primary surface; dsh >= 0.1.5
+     * would otherwise hand the authenticated URL to the OS default browser.
+     * Placed before extraArgs so `"extraArgs": "--open"` can override it. */
     const dshCmd = ['dsh', 'web',
       '--host', sq(settings.bindHost || '127.0.0.1'),
       '--port', String(port),
+      '--no-open',
       ...extraArgs.map(sq)].join(' ');
     const command = 'echo "DSHDESKTOP_PID=$$" && ' + envStr +
       'exec bash ' + sq(launchScriptWslPath()) + ' --exec ' + dshCmd;
@@ -97,8 +107,8 @@ class DshServer extends EventEmitter {
         }
         const urlM = URL_RE.exec(line);
         if (urlM && !urlFound) {
-          urlFound = 'http://127.0.0.1:' + urlM[1];
-          self.port = parseInt(urlM[1], 10);
+          urlFound = urlM[1];
+          try { self.port = parseInt(new URL(urlFound).port, 10) || null; } catch { self.port = null; }
           self._awaitReachable(urlFound);
         }
       },
